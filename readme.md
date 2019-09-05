@@ -35,6 +35,8 @@ $ yarn install
 
 ### To launch on your local machine
 
+> setup your graphql endpoint inside `config.js`
+
 ```sh
 $ yarn start
 # scan the QrCode with your phone on Expo App
