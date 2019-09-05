@@ -28,6 +28,7 @@ $ yarn install
 
 - Android phone with Expo app installed or 
 - Android studio with emulator
+- npm install -g expo-cli
 
 
 ## Usage

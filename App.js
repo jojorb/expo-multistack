@@ -1,30 +1,40 @@
 import React from 'react';
-import ApolloClient from 'apollo-boost';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloClient } from 'apollo-client';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
 import { ApolloProvider } from 'react-apollo';
 import { AppContainer } from './app/navigation/SwitchNav';
 import { GRAPHQLBACKEND, GRAPHQLTOKEN } from './config';
 
-const clientgraphql = new ApolloClient({
+const httpLink = createHttpLink({
   uri: GRAPHQLBACKEND,
-  request: async operation => {
-    // operation.setContext({
-    //   fetchOptions: {
-    //     credentials: 'include',
-    //   },
-    //   headers,
-    // });
-    const token = GRAPHQLTOKEN;
-    operation.setContext({
-      headers: {
-        authorization: token ? `Bearer ${token}` : '',
-      },
-    });
-  },
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  // const token = localStorage.getItem('token');
+  // const getToken = async () => {
+  //   const token = await AsyncStorage.getItem('auth.token')
+  //   return token
+  // }
+  // const token = getToken()
+  const token = GRAPHQLTOKEN;
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
 });
 
 const App = () => (
-  // console.log('app home screen')
-  <ApolloProvider client={clientgraphql}>
+  <ApolloProvider client={client}>
     <AppContainer />
   </ApolloProvider>
 );
